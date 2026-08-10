@@ -4,7 +4,7 @@ from fastmcp import Context
 
 from configurations.configs import get_realtive_path, is_within_roots
 from configurations.logger import get_logger
-from server.mcp_server import server
+from server.mcp_server import server, base_dir
 
 logger = get_logger("server-config")
 
@@ -61,7 +61,8 @@ async def write_file(filepath:Path, ctx:Context, content: str) -> str:
         return f"Error writing file: {str(e)}"
     
     
-async def list_files(ctx: Context, directory: str = ".") -> str:
+@server.tool()    
+async def list_files(ctx: Context, directory = ".") -> str:
     
     try:
         
@@ -76,9 +77,18 @@ async def list_files(ctx: Context, directory: str = ".") -> str:
         if not path.exists():
             await ctx.warning(f"Error: {directory} is not exists")
         
+        files = []
         
+        for item in path.iterdir():
+            name = item.name
+            relative_path = item.relative_to(base_dir)
+            file_type = "Dirdctory" if item.is_dir() else "file"
+            size = item.stat().st_size() if item.is_file() else 0
+            
+            files.append(f"{name}: {file_type}: {relative_path}: ({size} bytes)")
         
-        
+        return "\n".join(files) if files else "Directory is empty"
+             
     except Exception as e:
         await ctx.error(f"Error in list file: {e}")
         raise
