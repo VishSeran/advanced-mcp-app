@@ -65,6 +65,19 @@ async def list_files(ctx: Context, directory: str = ".") -> str:
     
     try:
         
+        if not is_within_roots(directory):
+            await ctx.warning("Error: Access denied, file/directory outside root directory")
+            
+        path = get_realtive_path(directory)
+        
+        if not path.is_dir():
+            await ctx.warning(f"Error: {directory} is not a directory")
+        
+        if not path.exists():
+            await ctx.warning(f"Error: {directory} is not exists")
+        
+        
+        
         
     except Exception as e:
         await ctx.error(f"Error in list file: {e}")
