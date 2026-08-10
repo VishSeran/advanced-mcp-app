@@ -1,14 +1,14 @@
 from fastmcp import Context
-
+from pathlib import Path
 from server.mcp_server import server
 from configurations.logger import get_logger
-from configurations.configs import is_within_roots
+from configurations.configs import is_within_roots, get_realtive_path
 
 
 logger = get_logger("server-config")
 
 @server.tool()
-async def read_file(filepath:str, ctx: Context) -> str:
+async def read_file(filepath:Path, ctx: Context) -> str:
     
     try:
         
@@ -18,7 +18,10 @@ async def read_file(filepath:str, ctx: Context) -> str:
         if not is_within_roots(filepath):
             return f"Error: Access denied: path outside workspace roots: {filepath}"
         
-        text = filepath
+        path = get_realtive_path(filepath)
+        text = path.read_text()
+        
+        return text
         
     
     except ValueError as e:
