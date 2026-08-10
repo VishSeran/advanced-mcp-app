@@ -1,9 +1,10 @@
-from fastmcp import Context
 from pathlib import Path
-from server.mcp_server import server
-from configurations.logger import get_logger
-from configurations.configs import is_within_roots, get_realtive_path
 
+from fastmcp import Context
+
+from configurations.configs import get_realtive_path, is_within_roots
+from configurations.logger import get_logger
+from server.mcp_server import server
 
 logger = get_logger("server-config")
 
@@ -22,8 +23,7 @@ async def read_file(filepath:Path, ctx: Context) -> str:
         text = path.read_text()
         
         return text
-        
-    
+
     except ValueError as e:
         await ctx.error(f"Value error: {e}")
         raise
@@ -31,4 +31,30 @@ async def read_file(filepath:Path, ctx: Context) -> str:
     except Exception as e:
         await ctx.error(f"Error in {filepath} read file: {e}")
         raise
+    
+    
+@server.tool()
+async def write_file(filepath:Path, ctx:Context, content: str) -> str:
+    
+    try:
+        
+        if content is None:
+            raise ValueError("content is missing")
+        
+        if not is_within_roots(filepath):
+            return f"Error: Access denied: path outside workspace roots: {filepath}"
+        
+        path = get_realtive_path(filepath)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        
+        path.write_text(content)
+        return f"Successfully wrote {len(content)} characters to {filepath}"
+        
+    except ValueError as e:
+        await ctx.error(f"Value error: {e}")
+        return f"Error writing file: {str(e)}"
+    
+    except Exception as e:
+        await ctx.error(f"Error in write file: {e}")
+        return f"Error writing file: {str(e)}"
 
