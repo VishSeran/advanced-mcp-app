@@ -103,14 +103,12 @@ async def list_files(ctx: Context, directory = ".") -> str:
 @server.tool()
 async def analyze_code(code:str, ctx:Context, focus:str = "quality") -> str:
     
-    prompt = 
+    prompt = f"""Analyze the following code  focusing on {focus}.
     
-    f"""Analyze the following code  focusing on {focus}.
-    
-    Code:
-    {code}
-    
-    """
+                Code:
+                {code}
+                
+            """
     
     result = await ctx.session.create_message(
         messages= [
