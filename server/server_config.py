@@ -22,6 +22,7 @@ async def read_file(filepath:Path, ctx: Context) -> str:
         path = get_realtive_path(filepath)
         text = path.read_text()
         
+        await ctx.info(f"file read is successfull: {filepath}")
         return text
 
     except ValueError as e:
@@ -48,6 +49,7 @@ async def write_file(filepath:Path, ctx:Context, content: str) -> str:
         path.parent.mkdir(parents=True, exist_ok=True)
         
         path.write_text(content)
+        await ctx.info(f"Successfully wrote {len(content)} characters to {filepath}")
         return f"Successfully wrote {len(content)} characters to {filepath}"
         
     except ValueError as e:
@@ -57,4 +59,14 @@ async def write_file(filepath:Path, ctx:Context, content: str) -> str:
     except Exception as e:
         await ctx.error(f"Error in write file: {e}")
         return f"Error writing file: {str(e)}"
+    
+    
+async def list_files(ctx: Context, directory: str = ".") -> str:
+    
+    try:
+        
+        
+    except Exception as e:
+        await ctx.error(f"Error in list file: {e}")
+        raise
 
