@@ -101,41 +101,30 @@ async def list_files(ctx: Context, directory = ".") -> str:
     
 
 @server.tool()
-async def analyze_code(code:str, focus:str = "quality") -> str:
+async def analyze_code(code:str, ctx:Context, focus:str = "quality") -> str:
     
-    """Analyze code focusing on specified aspect.
-
-    In a full MCP implementation with bidirectional communication,
-    this tool would send a sampling/createMessage JSON-RPC request
-    to the client. For this educational lab, we return a message
-    indicating where sampling would occur.
+    prompt = 
+    
+    f"""Analyze the following code  focusing on {focus}.
+    
+    Code:
+    {code}
+    
     """
     
-    return f"""
-    [SAMPLING TRIGER]
-    
-    This tool would send sampling/createMessage request to client:
-    
-    {{
-            "method": "sampling/createMessage",
-            "params": {{
-                "messages": [{{"role": "user", "content": {{
+    result = await ctx.session.create_message(
+        messages= [
+            {
+                "role": "user",
+                "content": {
                     "type": "text",
-                    "text": "Analyze this code for {focus}:\\n{code[:50]}..."
-                }}}}],
-                "maxTokens": 500 
-            }}
-        }}
-        
-        
-        The client would:
-        1. Show approval dialog to user
-        2. if approved, call LLM with the prompt
-        3. Return LLM response to server
-        4. server would use response to complete the analysis
-        
-    """
+                    "text": prompt
+                }
+            }
+        ], 
+        max_tokens=1000
+    )
     
-    
+    return result.content.text
 
 
