@@ -103,26 +103,40 @@ async def list_files(ctx: Context, directory = ".") -> str:
 @server.tool()
 async def analyze_code(code:str, ctx:Context, focus:str = "quality") -> str:
     
-    prompt = f"""Analyze the following code  focusing on {focus}.
-    
-                Code:
-                {code}
-                
-            """
-    
-    result = await ctx.session.create_message(
-        messages= [ 
-           SamplingMessage(
-               role="user",
-               content=TextContent(
-                   type="text",
-                   text=prompt
-               )
-           )
-        ], 
-        max_tokens=1000
-    )
-    
-    return result.content.text
+    try:
+        prompt = f"""Analyze the following code  focusing on {focus}.
+        
+                    Code:
+                    {code}
+                    
+                """
+        
+        result = await ctx.session.create_message(
+            messages= [ 
+            SamplingMessage(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=prompt
+                )
+            )
+            ], 
+            max_tokens=1000
+        )
+        
+        if not isinstance(result.content, TextContent):
+            raise ValueError(  # noqa: TRY004
+            f"Expected text sampling response, "
+            f"got {type(result.content).__name__}"
+            )
+            
+        return result.content.text
 
+    except ValueError as e:
+        await ctx.error(f"Value error: {e}")
+        raise
+    
+    except Exception as e:
+        await ctx.error(f'Error in analyze code: {e}')
+        raise
 
