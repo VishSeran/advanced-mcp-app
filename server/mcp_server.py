@@ -20,3 +20,6 @@ class MCPServer:
         except Exception as e:
             logger.error(f"Error in mcp server init: {e}")
             raise
+        
+mcp_server = MCPServer()
+server = mcp_server.mcp_server

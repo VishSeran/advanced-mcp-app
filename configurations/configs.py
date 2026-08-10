@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from configurations.logger import get_logger
+
 from server.mcp_server import base_dir
 
 logger = get_logger("configs")
