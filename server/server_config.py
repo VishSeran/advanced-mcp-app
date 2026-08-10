@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from fastmcp import Context
-
+from mcp.types import SamplingMessage, TextContent
 from configurations.configs import get_realtive_path, is_within_roots
 from configurations.logger import get_logger
 from server.mcp_server import server, base_dir
@@ -111,14 +111,14 @@ async def analyze_code(code:str, ctx:Context, focus:str = "quality") -> str:
             """
     
     result = await ctx.session.create_message(
-        messages= [
-            {
-                "role": "user",
-                "content": {
-                    "type": "text",
-                    "text": prompt
-                }
-            }
+        messages= [ 
+           SamplingMessage(
+               role="user",
+               content=TextContent(
+                   type="text",
+                   text=prompt
+               )
+           )
         ], 
         max_tokens=1000
     )
