@@ -6,7 +6,7 @@ from server.mcp_server import base_dir
 
 logger = get_logger("configs")
 
-def is_within_roots(path:Path) -> bool:
+def is_within_roots(path) -> bool:
     
     try:
         path.resolve().relative_to(base_dir.resolve())
@@ -16,7 +16,7 @@ def is_within_roots(path:Path) -> bool:
         return False
     
     
-def get_realtive_path(path:Path):
+def get_realtive_path(path):
     
     try:
         
