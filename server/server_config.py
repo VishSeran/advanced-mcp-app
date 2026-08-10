@@ -11,6 +11,8 @@ logger = get_logger("server-config")
 @server.tool()
 async def read_file(filepath:Path, ctx: Context) -> str:
     
+    """Read a file from the workspace directory."""
+    
     try:
         
         if filepath is None:
@@ -36,6 +38,8 @@ async def read_file(filepath:Path, ctx: Context) -> str:
     
 @server.tool()
 async def write_file(filepath:Path, ctx:Context, content: str) -> str:
+    
+    """Write content to a file in the workspace directory."""
     
     try:
         
@@ -63,6 +67,8 @@ async def write_file(filepath:Path, ctx:Context, content: str) -> str:
     
 @server.tool()    
 async def list_files(ctx: Context, directory = ".") -> str:
+    
+    """List files in a directory within the workspace."""
     
     try:
         
@@ -92,4 +98,44 @@ async def list_files(ctx: Context, directory = ".") -> str:
     except Exception as e:
         await ctx.error(f"Error in list file: {e}")
         raise
+    
+
+@server.tool()
+async def analyze_code(code:str, focus:str = "quality") -> str:
+    
+    """Analyze code focusing on specified aspect.
+
+    In a full MCP implementation with bidirectional communication,
+    this tool would send a sampling/createMessage JSON-RPC request
+    to the client. For this educational lab, we return a message
+    indicating where sampling would occur.
+    """
+    
+    return f"""
+    [SAMPLING TRIGER]
+    
+    This tool would send sampling/createMessage request to client:
+    
+    {{
+            "method": "sampling/createMessage",
+            "params": {{
+                "messages": [{{"role": "user", "content": {{
+                    "type": "text",
+                    "text": "Analyze this code for {focus}:\\n{code[:50]}..."
+                }}}}],
+                "maxTokens": 500 
+            }}
+        }}
+        
+        
+        The client would:
+        1. Show approval dialog to user
+        2. if approved, call LLM with the prompt
+        3. Return LLM response to server
+        4. server would use response to complete the analysis
+        
+    """
+    
+    
+
 
