@@ -20,7 +20,14 @@ def get_realtive_path(path:Path):
     
     try:
         
+        if path is None:
+            raise ValueError("Path is missing")
         
+        file_path =  (base_dir/path).resolve()
+        path = file_path.relative_to(base_dir)
+        
+        return path
+ 
     except ValueError as e:
         logger.error(f"Value error: {e}")
         raise
