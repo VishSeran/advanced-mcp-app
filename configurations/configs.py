@@ -14,4 +14,18 @@ def is_within_roots(path:Path) -> bool:
     
     except ValueError:
         return False
+    
+    
+def get_realtive_path(path:Path):
+    
+    try:
+        
+        
+    except ValueError as e:
+        logger.error(f"Value error: {e}")
+        raise
+    
+    except Exception as e:
+        logger.error(f"Error in get_realtive_path: {e}")
+        raise
         

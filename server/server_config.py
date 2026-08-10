@@ -18,6 +18,8 @@ async def read_file(filepath:str, ctx: Context) -> str:
         if not is_within_roots(filepath):
             return f"Error: Access denied: path outside workspace roots: {filepath}"
         
+        text = filepath
+        
     
     except ValueError as e:
         await ctx.error(f"Value error: {e}")
