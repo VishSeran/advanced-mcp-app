@@ -61,11 +61,27 @@ class LLMAgent:
             
             logger.info(f"Groq llm agent initiated: {self.llm_agent}")
             
-            
-            
+ 
         except ValueError as e:
             logger.error(f"Value Error in agent init: {e}")
             raise    
         except Exception as e:
             logger.error(f"Error in agent init: {e}")
+            raise
+        
+    async def get_agent_response(self, query):
+        
+        try:
+            
+            if query is None:
+                raise ValueError("query is missing")
+            
+            
+            
+        except ValueError as e:
+            logger.error(f"Value Error in get_agent_response: {e}")
+            raise
+            
+        except Exception as e:
+            logger.error(f"Error in get_agent_response: {e}")
             raise
