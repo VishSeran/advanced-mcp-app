@@ -4,6 +4,8 @@ from configurations.logger import get_logger
 
 from server.mcp_server import base_dir
 
+MODEL_NAME = "llama-3.3-70b-versatile"
+
 logger = get_logger("configs")
 
 def is_within_roots(path) -> bool:
