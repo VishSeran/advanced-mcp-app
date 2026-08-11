@@ -193,4 +193,34 @@ async def review_code(filename:str, ctx:Context):
         await ctx.error(f"Error in review code {filename}: {e}")
         raise
     
+
+@server.prompt()
+async def analyze_security(filename:str, ctx:Context):
+    
+    """Generate a prompt to analyze security of a file."""
+    try:
+        
+        path:Path = (base_dir/filename).resolve()
+        path.relative_to(base_dir)
+        
+        if not path.exists() or not path.is_file():
+            await ctx.warning(f"File is not found or path isn't a file: {filename}")
+            return f"File is not found or path isn't a file: {filename}"
+        
+        prompt =f"""Perform a security analysis of '{filename}' focusing on:
+
+                    1. Input validation and sanitization
+                    2. Authentication and authorization checks
+                    3. Potential injection vulnerabilities
+                    4. Data exposure risks
+                    5. Error handling security
+
+                    Provide specific line numbers and remediation suggestions."""
+        
+        return prompt
+            
+    except Exception as e:
+        await ctx.error(f"Error in analyze_security {filename}: {e}")
+        raise
+    
     
