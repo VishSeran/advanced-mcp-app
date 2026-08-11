@@ -139,4 +139,88 @@ async def analyze_code(code:str, ctx:Context, focus:str = "quality") -> str:
     except Exception as e:
         await ctx.error(f'Error in analyze code: {e}')
         raise
+    
+@server.resource("file://workspace/{filename}")
+async def get_workspace_file(filename:str, ctx:Context) -> str:
+    
+    "Read a file from workspace as a resource"
+    
+    try:
+        path = (base_dir/filename).resolve()
+        path.relative_to(base_dir)
+        
+        if not path.exists() or not path.is_file():
+            await ctx.warning ("File is not found or path isn't a file")
+            return "File is not found or path isn't a file"
+        
+        text = path.read_text()
+        await ctx.info(f"file read successfull: {text}")
+        
+        return text
+        
+    except Exception as e:
+        await ctx.error(f"Error in get_workspace_file {filename}: {e}")
+        raise
 
+@server.prompt()
+async def review_code(filename:str, ctx:Context):
+    
+    "generate a prompt to review a code from a file"
+    try:
+        
+        path:Path = (base_dir/filename).resolve()
+        path.relative_to(base_dir)
+        
+        if not path.exists() or not path.is_file():
+            await ctx.warning(f"File is not found or path isn't a file: {filename}")
+            return f"File is not found or path isn't a file: {filename}"
+        
+        prompt =f"""You are a helpful code review agent.
+                    please review the code in file: {filename} and provide:
+                    
+                    1. A summary of what the code does
+                    2. Potential bugs or issues
+                    3. Security concerns
+                    4. Suggestions for improvements
+                    5. Code quality assessment
+
+                    Focus on readability, maintainability, and best practices.
+        """
+        
+        return prompt
+            
+    except Exception as e:
+        await ctx.error(f"Error in review code {filename}: {e}")
+        raise
+    
+
+@server.prompt()
+async def analyze_security(filename:str, ctx:Context):
+    
+    """Generate a prompt to analyze security of a file."""
+    try:
+        
+        path:Path = (base_dir/filename).resolve()
+        path.relative_to(base_dir)
+        
+        if not path.exists() or not path.is_file():
+            await ctx.warning(f"File is not found or path isn't a file: {filename}")
+            return f"File is not found or path isn't a file: {filename}"
+        
+        prompt =f"""Perform a security analysis of '{filename}' focusing on:
+
+                    1. Input validation and sanitization
+                    2. Authentication and authorization checks
+                    3. Potential injection vulnerabilities
+                    4. Data exposure risks
+                    5. Error handling security
+
+                    Provide specific line numbers and remediation suggestions."""
+        
+        return prompt
+            
+    except Exception as e:
+        await ctx.error(f"Error in analyze_security {filename}: {e}")
+        raise
+    
+    
