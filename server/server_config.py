@@ -224,3 +224,12 @@ async def analyze_security(filename:str, ctx:Context):
         raise
     
     
+if __name__ == "__main__":
+    print("Starting HTTP MCP Server on http://127.0.0.1:8000")
+    print(f"Workspace roots: {base_dir}")
+    
+    server.run(transport="http",
+               host = "127.0.0.1",
+               port = 8000)
+    
+    
