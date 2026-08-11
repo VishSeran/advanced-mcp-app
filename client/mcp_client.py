@@ -2,6 +2,7 @@
 from contextlib import AsyncExitStack
 
 from mcp.client import streamable_http
+from mcp import ClientSession
 
 from configurations.logger import get_logger
 
@@ -19,7 +20,7 @@ class MCPHTTPClient:
         self.connect = None
         
     
-    async def connect(self):
+    async def connect_to_server(self):
         
         """Connect to HTTP MCP server via Streamable HTTP. Safe to call multiple times."""
         
@@ -31,9 +32,18 @@ class MCPHTTPClient:
             
             mcp_url = f"{self.server_url}/mcp"
             
-            read, write,_sid = self.exit_stack.enter_async_context(
+            read, write,_sid = await self.exit_stack.enter_async_context(
                 streamable_http(mcp_url)
             )
+            
+            self.session = await self.exit_stack.enter_async_context(
+                ClientSession(read, write)
+            )
+            
+            await self.session.initialize()
+            logger.info("Client has connected to server...")
+            self.connect = True
+            
             
         except ValueError as e:
             logger.error(f"Value error: {e}")
