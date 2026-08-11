@@ -119,3 +119,57 @@ class MCPHTTPClient:
         except Exception as e:
             logger.error(f"Error in read resource: {e}")
             raise
+        
+        
+    async def list_prompts(self):
+        
+        try:
+                    
+            result = await self.session.list_prompts()
+            logger.info(f"prompts are listed: {result}")
+            
+            return result.prompts
+                    
+        except Exception as e:
+            logger.error(f"Error in list prompts: {e}")
+            raise
+        
+        
+    async def get_prompt(self, name:str, arguments:dict)
+    
+        try:
+            
+            if name is None:
+                raise ValueError("Prompt name is missing")
+            
+            if arguments is None:
+                raise ValueError("Prompts arguments are missing")
+                    
+            result = await self.session.get_prompt(name, arguments)
+            logger.info(f"{name} is fetched: {result}")
+            
+            return result
+        
+        
+        except ValueError as e:
+            logger.error(f"Value Error in get prompt: {e}")
+            raise
+                    
+        except Exception as e:
+            logger.error(f"Error in get prompt: {e}")
+            raise
+        
+        
+    async def close_connection(self):
+        
+        try:
+            self.session = None
+            self.agent = None
+            self.connect = False
+            await self.exit_stack.aclose()
+            
+        except Exception as e:
+            logger.error(f"Error in close connection: {e}")
+            raise
+                
+                
