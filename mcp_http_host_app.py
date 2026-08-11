@@ -8,9 +8,30 @@ logger = get_logger("http-app")
 
 class MCPHTTPHostApp(MCPHTTPClient):
     
-    async def __init__(self, server_url, roots_dir):
+    def __init__(self, server_url, roots_dir):
         super().__init__(server_url, roots_dir)
         
         self.conversations = []
         self.tools = []
         self.llm_client = None
+
+    async def host_app_initialize(self):
+        
+        try:
+            
+            await self.connect_to_server()
+            
+            self.tools = await load_mcp_tools(self.session)
+            
+            logger.info(
+                "Loaded %d MCP tools",
+                len(self.tools)
+            )
+            
+            self.llm_client = LLMAgent(tools=self.tools)
+            logger.info("LLM agent initialized")
+            
+        except Exception:
+            logger.exception("Failed to initialize MCP host application")
+            await self.close_connection()
+            raise
