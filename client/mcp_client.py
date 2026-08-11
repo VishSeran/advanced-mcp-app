@@ -94,7 +94,10 @@ class MCPHTTPClient:
         
         try:
             
+            result = await self.session.list_resources()
+            logger.info(f"resources are listed: {result}")
             
+            return result.resources
                     
         except Exception as e:
             logger.error(f"Error in list resources: {e}")
