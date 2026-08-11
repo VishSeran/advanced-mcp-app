@@ -162,3 +162,7 @@ async def get_workspace_file(filename:str, ctx:Context) -> str:
         await ctx.error(f"Error in get_workspace_file {filename}: {e}")
         raise
 
+@server.prompt()
+async def review_code(filename:str):
+    
+    
