@@ -119,3 +119,18 @@ class MCPHTTPClient:
         except Exception as e:
             logger.error(f"Error in read resource: {e}")
             raise
+        
+        
+    async def list_prompts(self):
+        
+        try:
+                    
+            result = await self.session.list_prompts()
+            logger.info(f"prompts are listed: {result}")
+            
+            return result.prompts
+                    
+        except Exception as e:
+            logger.error(f"Error in list prompts: {e}")
+            raise
+                
