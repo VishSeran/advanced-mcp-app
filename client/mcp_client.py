@@ -70,11 +70,32 @@ class MCPHTTPClient:
         
         try:
             
+            if tool_name is None:
+                raise ValueError("Tool name is missing")
+            
+            if arguments is None:
+                raise ValueError("arguments are missing")
+            
             result = await self.session.call_tool(tool_name, arguments)
             logger.info(f"{tool_name} call successfull")
             
             return result
+        
+        except ValueError as e:
+            logger.error(f"Value Error in call tool: {e}")
+            raise
             
         except Exception as e:
             logger.error(f"Error in call tool: {e}")
+            raise
+        
+    
+    async def list_resources(self):
+        
+        try:
+            
+            
+                    
+        except Exception as e:
+            logger.error(f"Error in list resources: {e}")
             raise
