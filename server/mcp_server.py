@@ -1,5 +1,6 @@
-from fastmcp import FastMCP
 from pathlib import Path
+
+from fastmcp import FastMCP
 
 from configurations.logger import get_logger
 
