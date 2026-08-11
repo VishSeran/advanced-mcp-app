@@ -30,6 +30,12 @@ class LLMAgent:
             
             checkpointer = InMemorySaver()
             
+            self.configs = {
+                "configurable": {
+                    "thread_id": "conversational_id"
+                }    
+            }
+            
             self.llm = ChatGroq(
                 api_key=groq_api,
                 model=model_name,
@@ -56,7 +62,7 @@ class LLMAgent:
             logger.info(f"Groq llm agent initiated: {self.llm_agent}")
             
             
-        
+            
         except ValueError as e:
             logger.error(f"Value Error in agent init: {e}")
             raise    
