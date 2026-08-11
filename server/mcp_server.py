@@ -4,7 +4,7 @@ from pathlib import Path
 from configurations.logger import get_logger
 
 logger = get_logger("mcp-server")
-base_dir  = Path(__file__).parent / "workspace"
+base_dir  = (Path(__file__).parent / "workspace").resolve()
 base_dir.mkdir(exist_ok=True)
 class MCPServer:
     

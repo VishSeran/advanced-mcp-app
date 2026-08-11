@@ -139,4 +139,26 @@ async def analyze_code(code:str, ctx:Context, focus:str = "quality") -> str:
     except Exception as e:
         await ctx.error(f'Error in analyze code: {e}')
         raise
+    
+@server.resource("file://workspace/{filename}")
+async def get_workspace_file(filename:str, ctx:Context) -> str:
+    
+    "Read a file from workspace as a resource"
+    
+    try:
+        path:Path = base_dir/filename
+        path = get_realtive_path(path)
+        
+        if not path.exists() or not path.is_file():
+            await ctx.warning ("File is not found or path isn't a file")
+            return "File is not found or path isn't a file"
+        
+        text = path.read_text()
+        await ctx.info(f"file read successfull: {text}")
+        
+        return text
+        
+    except Exception as e:
+        await ctx.error(f"Error in get_workspace_file {filename}: {e}")
+        raise
 
