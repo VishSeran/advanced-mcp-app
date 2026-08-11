@@ -52,3 +52,15 @@ class MCPHTTPClient:
         except Exception as e:
             logger.error(f"Error in connection: {e}")
             raise
+        
+    async def list_tools(self):
+        
+        try:
+            
+            result = await self.session.list_tools()
+            logger.info(f"Tools listing completed: {result}")
+            return result.tools
+            
+        except Exception as e:
+            logger.error(f"Error in list tools: {e}")
+            raise
