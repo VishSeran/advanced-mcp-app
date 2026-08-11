@@ -158,5 +158,18 @@ class MCPHTTPClient:
         except Exception as e:
             logger.error(f"Error in get prompt: {e}")
             raise
+        
+        
+    async def close_connection(self):
+        
+        try:
+            self.session = None
+            self.agent = None
+            self.connect = False
+            await self.exit_stack.aclose()
+            
+        except Exception as e:
+            logger.error(f"Error in close connection: {e}")
+            raise
                 
                 
