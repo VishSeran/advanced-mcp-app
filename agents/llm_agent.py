@@ -76,7 +76,18 @@ class LLMAgent:
             if query is None:
                 raise ValueError("query is missing")
             
+            response = await self.llm_agent.ainvoke({
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": query
+                    }
+                ]
+            }, config=self.configs)
             
+            logger.info(f"response is fetched successfully: {response}")
+            
+            return response['messages'][-1].content
             
         except ValueError as e:
             logger.error(f"Value Error in get_agent_response: {e}")
