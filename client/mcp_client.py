@@ -1,7 +1,7 @@
 
 from contextlib import AsyncExitStack
 
-from mcp.client import streamable_http
+from mcp.client.streamable_http import streamable_http_client
 from mcp import ClientSession
 
 from configurations.logger import get_logger
@@ -17,7 +17,7 @@ class MCPHTTPClient:
         self.session = None
         self.agent = None
         self.exit_stack = AsyncExitStack()
-        self.connect = None
+        self.connect = False
         
     
     async def connect_to_server(self):
@@ -33,7 +33,7 @@ class MCPHTTPClient:
             mcp_url = f"{self.server_url}/mcp"
             
             read, write,_sid = await self.exit_stack.enter_async_context(
-                streamable_http(mcp_url)
+                streamable_http_client(mcp_url)
             )
             
             self.session = await self.exit_stack.enter_async_context(
@@ -50,7 +50,16 @@ class MCPHTTPClient:
             raise
             
         except Exception as e:
-            logger.error(f"Error in connection: {e}")
+            logger.error(
+                "Error connecting to MCP server: %s",
+                e
+            )
+
+            await self.exit_stack.aclose()
+            self.exit_stack = AsyncExitStack()
+            self.session = None
+            self.connected = False
+
             raise
         
     async def list_tools(self):
@@ -135,7 +144,7 @@ class MCPHTTPClient:
             raise
         
         
-    async def get_prompt(self, name:str, arguments:dict)
+    async def get_prompt(self, name:str, arguments:dict):
     
         try:
             
@@ -163,13 +172,14 @@ class MCPHTTPClient:
     async def close_connection(self):
         
         try:
-            self.session = None
-            self.agent = None
-            self.connect = False
             await self.exit_stack.aclose()
             
-        except Exception as e:
-            logger.error(f"Error in close connection: {e}")
-            raise
+        finally:
+            self.exit_stack = AsyncExitStack()
+            self.session = None
+            self.agent = None
+            self.connected = False
+
+            logger.info("MCP connection closed")
                 
                 
