@@ -102,3 +102,20 @@ class MCPHTTPClient:
         except Exception as e:
             logger.error(f"Error in list resources: {e}")
             raise
+        
+    async def read_resouce(self, uri:str):
+        
+        try:
+            if uri is None:
+                raise ValueError("URI is missing")
+            
+            result = await self.session.read_resource(uri)
+            logger.info(f"Resource is fethed: {result}")
+            return result
+            
+        except ValueError as e:
+            logger.error(f"Value Error in read resource: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Error in read resource: {e}")
+            raise
