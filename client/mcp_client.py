@@ -64,3 +64,17 @@ class MCPHTTPClient:
         except Exception as e:
             logger.error(f"Error in list tools: {e}")
             raise
+        
+        
+    async def call_tool(self, tool_name:str, arguments:dict):
+        
+        try:
+            
+            result = await self.session.call_tool(tool_name, arguments)
+            logger.info(f"{tool_name} call successfull")
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error in call tool: {e}")
+            raise
