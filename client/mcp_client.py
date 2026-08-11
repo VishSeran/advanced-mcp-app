@@ -133,4 +133,30 @@ class MCPHTTPClient:
         except Exception as e:
             logger.error(f"Error in list prompts: {e}")
             raise
+        
+        
+    async def get_prompt(self, name:str, arguments:dict)
+    
+        try:
+            
+            if name is None:
+                raise ValueError("Prompt name is missing")
+            
+            if arguments is None:
+                raise ValueError("Prompts arguments are missing")
+                    
+            result = await self.session.get_prompt(name, arguments)
+            logger.info(f"{name} is fetched: {result}")
+            
+            return result
+        
+        
+        except ValueError as e:
+            logger.error(f"Value Error in get prompt: {e}")
+            raise
+                    
+        except Exception as e:
+            logger.error(f"Error in get prompt: {e}")
+            raise
+                
                 
