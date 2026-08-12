@@ -135,7 +135,7 @@ class MCPHTTPHostApp:
             encoded_file_name = quote(filename, safe="")
             
             file = await self.mcp_client.read_resouce_from_server(f"file://workspace/{encoded_file_name}")
-            return file
+            return file.contents[0].text
             
         except Exception as e:
             logger.exception("Error in read file")
