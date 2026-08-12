@@ -47,3 +47,30 @@ class MCPHTTPHostApp(MCPHTTPClient):
         except Exception as e:
             logger.error(f"Error in get_llm_response: {e}")
             raise
+        
+    async def conversation(self):
+        
+        
+        print("\nEntering conversation mode. Type 'quit' or 'q' to exit.")
+        
+        while(True):
+            
+            query = input("Enter your question here: \n").strip()
+            
+            if query is None:
+                print("\nPlease enter a query")
+                continue
+            
+            if query.lower() in ("quit", "q"):
+                print("Exit conversation...")
+                break
+                
+        try:      
+            
+            response = await self.get_llm_response(query)
+            print("\n" + response)  
+                
+            
+        except Exception as e:
+            logger.error(f"Error in conversation:{e}")
+            raise
