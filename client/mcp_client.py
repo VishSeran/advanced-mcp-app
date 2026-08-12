@@ -43,7 +43,11 @@ class MCPHTTPClient:
             )
             
             self.session = await self.exit_stack.enter_async_context(
-                ClientSession(read, write)
+                ClientSession(
+                    read,
+                    write,
+                    sampling_callback=self.sampling_handler
+                )
             )
             
             await self.session.initialize()
