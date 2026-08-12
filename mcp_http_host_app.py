@@ -1,4 +1,5 @@
 from langchain_mcp_adapters.tools import load_mcp_tools
+from mcp import ListPromptsResult
 
 from configurations.logger import get_logger
 from client.mcp_client import MCPHTTPClient
@@ -79,15 +80,44 @@ class MCPHTTPHostApp(MCPHTTPClient):
         
         try:
             
-            prompt_list = self.list_prompts()
+            prompt_list:ListPromptsResult = await self.list_prompts()
+            prompt_objs = prompt_list.prompts
             
             prompt_obj = next(
-                (prompt for prompt in prompt_list if prompt.name == prompt_name), None
+                (prompt for prompt in prompt_objs if prompt.name == prompt_name), None
             )
             
             if prompt_obj is None:
                 logger.info(f"No matching prompt name: {prompt_name}")
+                
+            logger.info(f"{prompt_name} prompt extracted success")
             
+            print(prompt_obj)
+            
+            arguments = {}
+            
+            if prompt_obj.arguments:
+                for argument in prompt_obj.arguments:
+                    
+                    is_required = "required" if argument.required else "optional"
+                    user_input = input(f"\n{argument.name} - {is_required}: ")
+                    
+                    if not user_input and argument.required:
+                        print(f"Error in {argument.name} - {is_required}")
+                        return
+                    
+                    if user_input:
+                        arguments[argument.name] = user_input
+            
+            prompt_result = await self.get_prompt(prompt_name, arguments)
+            prompt = prompt_result.messages[0].content.text
+            logger.info("prompt is fetched success.")
+            
+            llm_response = await self.get_llm_response(prompt)
+            logger.info(f"llm_response: {llm_response}")
+            
+            return llm_response
+
         except Exception as e:
             logger.error(f"Error in prompt: {e}")
             raise

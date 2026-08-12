@@ -2,7 +2,7 @@
 from contextlib import AsyncExitStack
 
 from mcp.client.streamable_http import streamable_http_client
-from mcp import ClientSession
+from mcp import ClientSession, GetPromptResult, ListPromptsResult
 
 from configurations.logger import get_logger
 
@@ -134,10 +134,10 @@ class MCPHTTPClient:
         
         try:
                     
-            result = await self.session.list_prompts()
+            result:ListPromptsResult = await self.session.list_prompts()
             logger.info(f"prompts are listed: {result}")
             
-            return result.prompts
+            return result
                     
         except Exception as e:
             logger.error(f"Error in list prompts: {e}")
@@ -154,7 +154,7 @@ class MCPHTTPClient:
             if arguments is None:
                 raise ValueError("Prompts arguments are missing")
                     
-            result = await self.session.get_prompt(name, arguments)
+            result:GetPromptResult = await self.session.get_prompt(name, arguments)
             logger.info(f"{name} is fetched: {result}")
             
             return result
