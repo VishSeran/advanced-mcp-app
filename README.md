@@ -26,6 +26,18 @@ This design demonstrates production-ready patterns for remote MCP servers with e
 
 ## Architecture
 
+                     MCP Server
+                         │
+          ┌──────────────┼──────────────┐
+          │              │              │
+        Tools         Resources       Prompts
+          │              │              │
+          ▼              ▼              ▼
+   load_mcp_tools()   read_resource()  get_prompt()
+          │              │              │
+          ▼              ▼              ▼
+       Agent           Host            Host
+
 ```
 mcp_http_server.py          # FastMCP server: tools, resources, prompts, roots enforcement
 mcp_http_client_base.py     # Base client: connection, protocol methods (inherited by both apps)
