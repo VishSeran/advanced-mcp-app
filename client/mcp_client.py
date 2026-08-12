@@ -1,5 +1,6 @@
 
 from contextlib import AsyncExitStack
+import json
 
 from mcp.client.streamable_http import streamable_http_client
 from mcp import ClientSession, GetPromptResult, ListPromptsResult, ListResourcesResult, ListToolsResult, ReadResourceResult
@@ -112,15 +113,15 @@ class MCPHTTPClient:
             logger.error(f"Error in list resources: {e}")
             raise
         
-    async def read_resouce(self, uri:str):
+    async def read_resouce_from_server(self, uri:str):
         
         try:
             if uri is None:
                 raise ValueError("URI is missing")
             
             result:ReadResourceResult = await self.session.read_resource(uri)
-            logger.info(f"Resource is fethed: {result}")
-            return result
+            logger.info("Resource is fethed")
+            return result.contents[0].text
             
         except ValueError as e:
             logger.error(f"Value Error in read resource: {e}")
@@ -155,7 +156,7 @@ class MCPHTTPClient:
                 raise ValueError("Prompts arguments are missing")
                     
             result:GetPromptResult = await self.session.get_prompt(name, arguments)
-            logger.info(f"{name} is fetched: {result}")
+            logger.info(f"{name} is fetched")
             
             return result
         
@@ -178,7 +179,7 @@ class MCPHTTPClient:
             self.exit_stack = AsyncExitStack()
             self.session = None
             self.agent = None
-            self.connected = False
+            self.connect = False
 
             logger.info("MCP connection closed")
                 
