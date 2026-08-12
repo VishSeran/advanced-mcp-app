@@ -35,3 +35,15 @@ class MCPHTTPHostApp(MCPHTTPClient):
             logger.exception("Failed to initialize MCP host application")
             await self.close_connection()
             raise
+        
+    async def get_llm_response(self, query):
+        
+        try:
+        
+            response = await self.llm_client.get_agent_response(query)
+            logger.info("Response is fetched")
+            return response
+        
+        except Exception as e:
+            logger.error(f"Error in get_llm_response: {e}")
+            raise
