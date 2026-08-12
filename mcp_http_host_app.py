@@ -74,3 +74,22 @@ class MCPHTTPHostApp(MCPHTTPClient):
         except Exception as e:
             logger.error(f"Error in conversation:{e}")
             raise
+        
+    async def prompt(self, prompt_name:str):
+        
+        try:
+            
+            prompt_list = self.list_prompts()
+            
+            prompt_obj = next(
+                (prompt for prompt in prompt_list if prompt.name == prompt_name), None
+            )
+            
+            if prompt_obj is None:
+                logger.info(f"No matching prompt name: {prompt_name}")
+            
+        except Exception as e:
+            logger.error(f"Error in prompt: {e}")
+            raise
+        
+        
