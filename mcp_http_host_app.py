@@ -7,41 +7,41 @@ from agents.llm_agent import LLMAgent
 
 logger = get_logger("http-app")
 
-class MCPHTTPHostApp(MCPHTTPClient):
+class MCPHTTPHostApp:
     
     def __init__(self, server_url, roots_dir):
-        super().__init__(server_url, roots_dir)
+        self.mcp_client = MCPHTTPClient(server_url, roots_dir)
         
         self.conversations = []
         self.tools = []
-        self.llm_client = None
+        self.agent = None
 
     async def host_app_initialize(self):
         
         try:
             
-            await self.connect_to_server()
+            await self.mcp_client.connect_to_server()
             
-            self.tools = await load_mcp_tools(self.session)
+            self.tools = await load_mcp_tools(self.mcp_client.session)
             
             logger.info(
                 "Loaded %d MCP tools",
                 len(self.tools)
             )
             
-            self.llm_client = LLMAgent(tools=self.tools)
+            self.agent = LLMAgent(tools=self.tools)
             logger.info("LLM agent initialized")
             
         except Exception:
             logger.exception("Failed to initialize MCP host application")
-            await self.close_connection()
+            await self.mcp_client.close_connection()
             raise
         
     async def get_llm_response(self, query):
         
         try:
         
-            response = await self.llm_client.get_agent_response(query)
+            response = await self.agent.get_agent_response(query)
             logger.info("Response is fetched")
             return response
         
@@ -80,7 +80,7 @@ class MCPHTTPHostApp(MCPHTTPClient):
         
         try:
             
-            prompt_list:ListPromptsResult = await self.list_prompts()
+            prompt_list:ListPromptsResult = await self.mcp_client.list_prompts()
             prompt_objs = prompt_list.prompts
             
             prompt_obj = next(
@@ -109,7 +109,7 @@ class MCPHTTPHostApp(MCPHTTPClient):
                     if user_input:
                         arguments[argument.name] = user_input
             
-            prompt_result = await self.get_prompt(prompt_name, arguments)
+            prompt_result = await self.mcp_client.get_prompt(prompt_name, arguments)
             prompt = prompt_result.messages[0].content.text
             logger.info("prompt is fetched success.")
             
@@ -122,5 +122,7 @@ class MCPHTTPHostApp(MCPHTTPClient):
         except Exception as e:
             logger.error(f"Error in prompt: {e}")
             raise
+        
+    
         
         

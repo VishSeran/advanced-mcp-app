@@ -175,8 +175,17 @@ async def review_code(filename:str, ctx:Context):
             await ctx.warning(f"File is not found or path isn't a file: {filename}")
             return f"File is not found or path isn't a file: {filename}"
         
+        code = path.read_text(encoding="utf-8").strip()
+        
+        language = path.suffix.lower()
+        
         prompt =f"""You are a helpful code review agent.
                     please review the code in file: {filename} and provide:
+                    
+                    
+                    Language (file suffix): {language or "Unknown"}
+                    
+                    Code: {code}
                     
                     1. A summary of what the code does
                     2. Potential bugs or issues
