@@ -2,7 +2,7 @@
 from contextlib import AsyncExitStack
 
 from mcp.client.streamable_http import streamable_http_client
-from mcp import ClientSession, GetPromptResult, ListPromptsResult
+from mcp import ClientSession, GetPromptResult, ListPromptsResult, ListResourcesResult, ListToolsResult, ReadResourceResult
 
 from configurations.logger import get_logger
 
@@ -66,7 +66,7 @@ class MCPHTTPClient:
         
         try:
             
-            result = await self.session.list_tools()
+            result:ListToolsResult = await self.session.list_tools()
             logger.info(f"Tools listing completed: {result}")
             return result.tools
             
@@ -103,7 +103,7 @@ class MCPHTTPClient:
         
         try:
             
-            result = await self.session.list_resources()
+            result:ListResourcesResult = await self.session.list_resources()
             logger.info(f"resources are listed: {result}")
             
             return result.resources
@@ -118,7 +118,7 @@ class MCPHTTPClient:
             if uri is None:
                 raise ValueError("URI is missing")
             
-            result = await self.session.read_resource(uri)
+            result:ReadResourceResult = await self.session.read_resource(uri)
             logger.info(f"Resource is fethed: {result}")
             return result
             

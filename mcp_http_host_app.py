@@ -116,6 +116,7 @@ class MCPHTTPHostApp(MCPHTTPClient):
             llm_response = await self.get_llm_response(prompt)
             logger.info(f"llm_response: {llm_response}")
             
+            
             return llm_response
 
         except Exception as e:
