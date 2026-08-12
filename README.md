@@ -25,7 +25,7 @@ This design demonstrates production-ready patterns for remote MCP servers with e
 - Awareness of filesystem security concepts
 
 ## Architecture
-
+```
                      MCP Server
                          │
           ┌──────────────┼──────────────┐
