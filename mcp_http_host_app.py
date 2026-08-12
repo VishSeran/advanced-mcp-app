@@ -1,3 +1,5 @@
+from urllib.parse import quote
+import json
 from langchain_mcp_adapters.tools import load_mcp_tools
 from mcp import ListPromptsResult
 
@@ -46,7 +48,7 @@ class MCPHTTPHostApp:
             return response
         
         except Exception as e:
-            logger.error(f"Error in get_llm_response: {e}")
+            logger.exception("Error in get_llm_response")
             raise
         
     async def conversation(self):
@@ -58,7 +60,7 @@ class MCPHTTPHostApp:
             
             query = input("Enter your question here: \n").strip()
             
-            if query is None:
+            if not query:
                 print("\nPlease enter a query")
                 continue
             
@@ -66,16 +68,16 @@ class MCPHTTPHostApp:
                 print("Exit conversation...")
                 break
                 
-        try:      
-            
-            response = await self.get_llm_response(query)
-            print("\n" + response)  
+            try:      
                 
+                response = await self.get_llm_response(query)
+                print("\n" + response)  
+                    
+                
+            except Exception as e:
+                logger.error(f"Error in conversation:{e}")
+                raise
             
-        except Exception as e:
-            logger.error(f"Error in conversation:{e}")
-            raise
-        
     async def prompt(self, prompt_name:str):
         
         try:
@@ -88,7 +90,9 @@ class MCPHTTPHostApp:
             )
             
             if prompt_obj is None:
-                logger.info(f"No matching prompt name: {prompt_name}")
+                raise ValueError(
+                    f"No matching MCP prompt: {prompt_name}"
+                )
                 
             logger.info(f"{prompt_name} prompt extracted success")
             
@@ -120,8 +124,24 @@ class MCPHTTPHostApp:
             return llm_response
 
         except Exception as e:
-            logger.error(f"Error in prompt: {e}")
+            logger.exception("Error in prompt")
             raise
+        
+    async def read_file(self):
+        
+        try:
+            
+            filename = input("Enter the file name you want to read: ")
+            encoded_file_name = quote(filename, safe="")
+            
+            file = await self.mcp_client.read_resouce_from_server(f"file://workspace/{encoded_file_name}")
+            return file
+            
+        except Exception as e:
+            logger.exception("Error in read file")
+            raise
+        
+    
         
     
         

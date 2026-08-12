@@ -9,7 +9,7 @@ from server.mcp_server import server, base_dir
 logger = get_logger("server-config")
 
 @server.tool()
-async def read_file(filepath:Path, ctx: Context) -> str:
+async def read_file(filepath, ctx: Context) -> str:
     
     """Read a file from the workspace directory."""
     
@@ -37,7 +37,7 @@ async def read_file(filepath:Path, ctx: Context) -> str:
     
     
 @server.tool()
-async def write_file(filepath:Path, ctx:Context, content: str) -> str:
+async def write_file(filepath, ctx:Context, content: str) -> str:
     
     """Write content to a file in the workspace directory."""
     
@@ -46,7 +46,11 @@ async def write_file(filepath:Path, ctx:Context, content: str) -> str:
         if content is None:
             raise ValueError("content is missing")
         
+        if not filepath:
+            raise ValueError("filepath is missing")
+        
         if not is_within_roots(filepath):
+            await ctx.warning(f"Error: Access denied: path outside workspace roots: {filepath}")
             return f"Error: Access denied: path outside workspace roots: {filepath}"
         
         path = get_realtive_path(filepath)
@@ -74,6 +78,7 @@ async def list_files(ctx: Context, directory = ".") -> str:
         
         if not is_within_roots(directory):
             await ctx.warning("Error: Access denied, file/directory outside root directory")
+            return "Error: Access denied, file/directory outside root directory"
             
         path = get_realtive_path(directory)
         
@@ -89,7 +94,7 @@ async def list_files(ctx: Context, directory = ".") -> str:
             name = item.name
             relative_path = item.relative_to(base_dir)
             file_type = "Dirdctory" if item.is_dir() else "file"
-            size = item.stat().st_size() if item.is_file() else 0
+            size = item.stat().st_size if item.is_file() else 0
             
             files.append(f"{name}: {file_type}: {relative_path}: ({size} bytes)")
         
@@ -154,7 +159,7 @@ async def get_workspace_file(filename:str, ctx:Context) -> str:
             return "File is not found or path isn't a file"
         
         text = path.read_text()
-        await ctx.info(f"file read successfull: {text}")
+        await ctx.info("file read successfull")
         
         return text
         
@@ -163,7 +168,7 @@ async def get_workspace_file(filename:str, ctx:Context) -> str:
         raise
 
 @server.prompt()
-async def review_code(filename:str, ctx:Context):
+async def review_code(filename:str, ctx:Context=None):
     
     "generate a prompt to review a code from a file"
     try:
