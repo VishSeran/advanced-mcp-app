@@ -2,21 +2,26 @@
 from contextlib import AsyncExitStack
 import json
 
+from fastmcp import Context
 from mcp.client.streamable_http import streamable_http_client
 from mcp import ClientSession, GetPromptResult, ListPromptsResult, ListResourcesResult, ListToolsResult, ReadResourceResult
+from mcp.types import CreateMessageRequestParams, RequestParams, CreateMessageResult, TextContent
 
+from mcp.client.streamable_http import RequestContext
+from agents.llm_agent import LLMAgent
 from configurations.logger import get_logger
+from configurations.configs import MODEL_NAME
 
 
 logger = get_logger("mcp-client")
 
 class MCPHTTPClient:
     
-    def __init__(self, server_url:str, roots_dir:str):
+    def __init__(self, server_url:str, roots_dir:str, agent:LLMAgent=None):
         self.server_url = server_url
         self.roots_dir = roots_dir
         self.session = None
-        self.agent = None
+        self.agent = agent
         self.exit_stack = AsyncExitStack()
         self.connect = False
         
@@ -121,7 +126,7 @@ class MCPHTTPClient:
             
             result:ReadResourceResult = await self.session.read_resource(uri)
             logger.info("Resource is fethed")
-            return result.contents[0].text
+            return result
             
         except ValueError as e:
             logger.error(f"Value Error in read resource: {e}")
@@ -167,6 +172,55 @@ class MCPHTTPClient:
                     
         except Exception as e:
             logger.error(f"Error in get prompt: {e}")
+            raise
+        
+        
+    async def sampling_handler(self, 
+                               content: RequestContext, 
+                               param: CreateMessageRequestParams, ctx:Context) -> CreateMessageResult:
+        
+        
+        try:
+            
+            if self.agent is None:
+                raise RuntimeError("Agent is not running")
+            
+            if not (content or param):
+                raise ValueError("parameters are missing")
+            
+            messages = []
+
+            for message in param.messages:
+                
+                if isinstance(message.content, TextContent):
+                    
+                    messages.append(
+                        {
+                            "role": message.role,
+                            "content": message.content.text
+                        }
+                    )
+                    
+            response = await self.agent.get_agent_response(messages)
+            
+            return CreateMessageResult(
+                role="assistant",
+                content= TextContent(
+                    type="text",
+                    text=response
+                ),
+                model=MODEL_NAME,
+                stopReason="endTurn"
+            )
+            
+            
+            
+        except ValueError as e:
+            logger.error(f"Value Error in sampling_handler: {e}")
+            raise
+                            
+        except Exception as e:
+            logger.error(f"Error in sampling_handler: {e}")
             raise
         
         
